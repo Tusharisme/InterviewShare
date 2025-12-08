@@ -139,6 +139,9 @@ const deleteExperience = async (id) => {
             </div>
         </div>
         
+        <div class="footer-row">
+            <div class="author-info">
+                <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
                 <div class="author-details">
                     <span class="author-name">{{ experience.author }}</span>
                     <span class="author-label">Shared 1 min read</span>
