@@ -9,7 +9,16 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
-    // Login and Register will be added later
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue')
+    }
   ]
 })
 

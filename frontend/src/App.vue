@@ -9,7 +9,9 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/" class="brand">InterviewShare</RouterLink>
         <div class="links">
             <RouterLink to="/">Home</RouterLink>
-            <!-- Add Login/Register links here later -->
+            <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
+            <RouterLink v-if="!isLoggedIn" to="/register">Register</RouterLink>
+            <a v-if="isLoggedIn" href="#" @click.prevent="logout">Logout</a>
         </div>
       </nav>
     </div>
@@ -19,6 +21,21 @@ import { RouterLink, RouterView } from 'vue-router'
     <RouterView />
   </main>
 </template>
+
+<script setup>
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+const isLoggedIn = ref(!!localStorage.getItem('auth_token'))
+const router = useRouter()
+
+const logout = () => {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('user_email')
+    isLoggedIn.value = false
+    router.push('/login')
+}
+</script>
 
 <style scoped>
 header {
