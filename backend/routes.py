@@ -18,6 +18,13 @@ def get_experiences():
         
     return jsonify([exp.to_dict() for exp in experiences]), 200
 
+@api.route('/experiences/me', methods=['GET'])
+@auth_token_required
+def get_my_experiences():
+    experiences = Experience.query.filter_by(user_id=current_user.id).order_by(Experience.created_at.desc()).all()
+    return jsonify([exp.to_dict() for exp in experiences]), 200
+
+
 
 from flask_security import auth_token_required, current_user
 

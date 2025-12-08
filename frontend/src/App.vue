@@ -9,8 +9,10 @@
         
         <template v-if="isLoggedIn">
            <RouterLink to="/create" class="btn-link">Share Experience</RouterLink>
+           <RouterLink to="/profile" class="nav-text">My Profile</RouterLink>
            <a href="#" @click.prevent="logout" class="nav-text">Logout</a>
         </template>
+
         
         <template v-else>
           <RouterLink to="/login" class="nav-text">Login</RouterLink>
