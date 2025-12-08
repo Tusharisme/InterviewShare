@@ -6,6 +6,27 @@ from flask_security import auth_token_required, current_user
 api = Blueprint('api', __name__)
 # We've globally disabled CSRF in config, but explicitly ensures no issues for this BP
 
+@api.route('/health', methods=['GET'])
+def health_check():
+    db_status = "ok"
+    db_info = "unknown"
+    try:
+        # Check DB connection
+        db.session.execute(db.text("SELECT 1"))
+        uri = str(db.engine.url)
+        if "sqlite" in uri:
+            db_info = "sqlite (fallback active - dangerous on vercel)"
+        elif "postgres" in uri:
+            db_info = "postgres (correct)"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
+    return jsonify({
+        "status": "online",
+        "db_status": db_status,
+        "db_type": db_info
+    }), 200
+
 @api.route('/experiences', methods=['GET'])
 def get_experiences():
     query = request.args.get('q')

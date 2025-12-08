@@ -5,7 +5,13 @@ from flask_security import hash_password
 
 app = create_app()
 
+# FORCE Cloud Connection for Seeding
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://neondb_owner:npg_bEpDQTlnY3B7@ep-wild-frost-a1dysrms-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+
 with app.app_context():
+    print(f"Connecting to: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    print("Creating tables...")
+    db.create_all() # Ensure tables exist!
     print("Seeding database...")
     
     # Create Users
