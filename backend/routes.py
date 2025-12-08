@@ -24,6 +24,27 @@ def get_my_experiences():
     experiences = Experience.query.filter_by(user_id=current_user.id).order_by(Experience.created_at.desc()).all()
     return jsonify([exp.to_dict() for exp in experiences]), 200
 
+@api.route('/experiences/<int:id>/like', methods=['POST'])
+@auth_token_required
+def toggle_like(id):
+    experience = Experience.query.get_or_404(id)
+    
+    if current_user in experience.liked_by:
+        experience.liked_by.remove(current_user)
+        action = 'unliked'
+    else:
+        experience.liked_by.append(current_user)
+        action = 'liked'
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': f'Experience {action}',
+        'likes_count': experience.liked_by.count(),
+        'action': action
+    }), 200
+
+
 
 
 from flask_security import auth_token_required, current_user

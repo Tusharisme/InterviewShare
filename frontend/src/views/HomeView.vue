@@ -35,12 +35,23 @@ onMounted(async () => {
         
         <p class="preview">{{ experience.content }}</p>
         
-        <div class="author-row">
-            <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
+        <div class="footer-row">
             <div class="author-info">
-                <span class="author-name">{{ experience.author }}</span>
-                <span class="author-label">Shared 1 min read</span>
+                <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
+                <div class="author-details">
+                    <span class="author-name">{{ experience.author }}</span>
+                    <span class="author-label">Shared 1 min read</span>
+                </div>
             </div>
+            
+            <button 
+                @click="toggleLike(experience)" 
+                class="like-btn" 
+                :class="{ 'liked': experience.isLiked }"
+            >
+                <span class="heart-icon">{{ experience.isLiked ? '❤️' : '🤍' }}</span>
+                <span class="like-count">{{ experience.likes_count }}</span>
+            </button>
         </div>
       </div>
     </div>
@@ -58,6 +69,7 @@ const loading = ref(true)
 const error = ref(null)
 const searchQuery = ref('')
 const currentUserEmail = localStorage.getItem('user_email')
+const currentUserId = parseInt(localStorage.getItem('user_id'))
 const router = useRouter()
 const { addToast } = useToast()
 let searchTimeout = null
@@ -74,7 +86,10 @@ const fetchExperiences = async () => {
         params.q = searchQuery.value
     }
     const response = await axios.get('/api/experiences', { params })
-    experiences.value = response.data
+    experiences.value = response.data.map(exp => ({
+        ...exp,
+        isLiked: exp.liker_ids.includes(currentUserId)
+    }))
   } catch (err) {
     console.error(err)
     error.value = 'Failed to load experiences.'
@@ -89,6 +104,32 @@ const handleSearch = () => {
     searchTimeout = setTimeout(() => {
         fetchExperiences()
     }, 300)
+}
+
+const toggleLike = async (experience) => {
+    if (!currentUserId) {
+        addToast('Please login to like posts', 'warning')
+        return
+    }
+
+    // Optimistic UI update
+    const previousState = experience.isLiked
+    const previousCount = experience.likes_count
+    
+    experience.isLiked = !experience.isLiked
+    experience.likes_count += experience.isLiked ? 1 : -1
+
+    try {
+        const token = localStorage.getItem('auth_token')
+        await axios.post(`/api/experiences/${experience.id}/like`, {}, {
+            headers: { 'Authentication-Token': token }
+        })
+    } catch (err) {
+        // Revert on error
+        experience.isLiked = previousState
+        experience.likes_count = previousCount
+        addToast('Failed to like post', 'error')
+    }
 }
 
 const canDelete = (experience) => {
@@ -208,12 +249,18 @@ const deleteExperience = async (id) => {
     white-space: pre-wrap;
 }
 
-.author-row {
+.footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--slate-100);
+}
+
+.author-info {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--slate-100);
 }
 
 .avatar-placeholder {
@@ -229,7 +276,7 @@ const deleteExperience = async (id) => {
     font-size: 0.85rem;
 }
 
-.author-info {
+.author-details {
     display: flex;
     flex-direction: column;
     line-height: 1.2;
@@ -243,6 +290,37 @@ const deleteExperience = async (id) => {
 .author-label {
     font-size: 0.8rem;
     color: var(--slate-400);
+}
+
+.like-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid var(--slate-200);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.like-btn:hover {
+    background-color: var(--slate-50);
+}
+
+.like-btn.liked {
+    border-color: #fda4af;
+    background-color: #fff1f2;
+    color: #e11d48;
+}
+
+.heart-icon {
+    font-size: 1.1rem;
+}
+
+.like-count {
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .btn-sm {

@@ -23,6 +23,13 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
     experiences = db.relationship('Experience', backref='author', lazy=True)
+    liked_experiences = db.relationship('Experience', secondary='experience_likes', backref='liked_by', lazy='dynamic')
+
+# Association table for Likes
+experience_likes = db.Table('experience_likes',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('experience_id', db.Integer, db.ForeignKey('experience.id'))
+)
 
 class Experience(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,5 +48,10 @@ class Experience(db.Model):
             'role_title': self.role_title,
             'content': self.content,
             'created_at': self.created_at.isoformat(),
-            'author': self.author.email
+            'author': self.author.email,
+            'likes_count': self.liked_by.count(),
+            # We can't easily check 'is_liked' here without context of current user, 
+            # so we'll handle that on the frontend or a separate field if needed.
+            # For simplicity, we'll return the list of liker IDs or just the count.
+            'liker_ids': [user.id for user in self.liked_by]
         }

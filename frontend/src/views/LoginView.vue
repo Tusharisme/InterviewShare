@@ -21,6 +21,7 @@ const login = async () => {
         if (token) {
             localStorage.setItem('auth_token', token)
             localStorage.setItem('user_email', email.value)
+            localStorage.setItem('user_id', response.data.response.user.id) // Assuming Flask-Security returns ID
             addToast('Welcome back!', 'success')
             router.push('/')
             setTimeout(() => window.location.reload(), 100)
