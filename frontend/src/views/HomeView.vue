@@ -14,21 +14,6 @@ onMounted(async () => {
     console.error(err)
     error.value = 'Failed to load experiences.'
   } finally {
-    loading.value = false
-  }
-})
-</script>
-
-<template>
-  <div class="home">
-    <h1>Latest Interview Experiences</h1>
-    
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    
-    <div v-else class="experiences-list">
-      <div v-if="experiences.length === 0" class="empty-state">
-        <div class="empty-icon">📝</div>
         <h3>No experiences yet</h3>
         <p>Be the first to share your interview journey!</p>
       </div>
@@ -70,16 +55,23 @@ import { useRouter } from 'vue-router'
 const experiences = ref([])
 const loading = ref(true)
 const error = ref(null)
+const searchQuery = ref('')
 const currentUserEmail = localStorage.getItem('user_email')
 const router = useRouter()
+let searchTimeout = null
 
 onMounted(async () => {
     fetchExperiences()
 })
 
 const fetchExperiences = async () => {
+  loading.value = true
   try {
-    const response = await axios.get('/api/experiences')
+    const params = {}
+    if (searchQuery.value) {
+        params.q = searchQuery.value
+    }
+    const response = await axios.get('/api/experiences', { params })
     experiences.value = response.data
   } catch (err) {
     console.error(err)
@@ -87,6 +79,13 @@ const fetchExperiences = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(() => {
+        fetchExperiences()
+    }, 300)
 }
 
 const canDelete = (experience) => {
@@ -113,6 +112,27 @@ const deleteExperience = async (id) => {
 .head-section {
     margin-bottom: 2rem;
     text-align: center;
+}
+
+.search-box {
+    max-width: 500px;
+    margin: 1.5rem auto 0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--slate-200);
+    border-radius: 50px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 4px var(--primary-50);
+    outline: none;
 }
 
 .empty-state {

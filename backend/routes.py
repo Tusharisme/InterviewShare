@@ -6,8 +6,18 @@ api = Blueprint('api', __name__)
 
 @api.route('/experiences', methods=['GET'])
 def get_experiences():
-    experiences = Experience.query.order_by(Experience.created_at.desc()).all()
+    query = request.args.get('q')
+    if query:
+        search = f"%{query}%"
+        experiences = Experience.query.filter(
+            (Experience.title.like(search)) | 
+            (Experience.company.like(search))
+        ).order_by(Experience.created_at.desc()).all()
+    else:
+        experiences = Experience.query.order_by(Experience.created_at.desc()).all()
+        
     return jsonify([exp.to_dict() for exp in experiences]), 200
+
 
 from flask_security import auth_token_required, current_user
 
