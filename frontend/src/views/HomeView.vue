@@ -3,15 +3,15 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
+import { useAuthStore } from '../stores/auth'
 
 const experiences = ref([])
 const loading = ref(true)
 const error = ref(null)
 const searchQuery = ref('')
-const currentUserEmail = localStorage.getItem('user_email')
-const currentUserId = parseInt(localStorage.getItem('user_id'))
 const router = useRouter()
 const { addToast } = useToast()
+const authStore = useAuthStore()
 let searchTimeout = null
 
 onMounted(async () => {
@@ -22,73 +22,6 @@ const fetchExperiences = async () => {
   loading.value = true
   try {
     const params = {}
-    if (searchQuery.value) {
-        params.q = searchQuery.value
-    }
-    const response = await axios.get('/api/experiences', { params })
-    experiences.value = response.data.map(exp => ({
-        ...exp,
-        // Calculate isLiked based on liker_ids array from backend
-        isLiked: exp.liker_ids ? exp.liker_ids.includes(currentUserId) : false
-    }))
-  } catch (err) {
-    console.error(err)
-    error.value = 'Failed to load experiences.'
-    addToast('Failed to load experiences', 'error')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleSearch = () => {
-    if (searchTimeout) clearTimeout(searchTimeout)
-    searchTimeout = setTimeout(() => {
-        fetchExperiences()
-    }, 300)
-}
-
-const toggleLike = async (experience) => {
-    if (!currentUserId) {
-        addToast('Please login to like posts', 'warning')
-        return
-    }
-
-    // Optimistic UI update
-    const previousState = experience.isLiked
-    const previousCount = experience.likes_count
-    
-    experience.isLiked = !experience.isLiked
-    experience.likes_count += experience.isLiked ? 1 : -1
-
-    try {
-        const token = localStorage.getItem('auth_token')
-        await axios.post(`/api/experiences/${experience.id}/like`, {}, {
-            headers: { 'Authentication-Token': token }
-        })
-    } catch (err) {
-        // Revert on error
-        experience.isLiked = previousState
-        experience.likes_count = previousCount
-        addToast('Failed to like post', 'error')
-    }
-}
-
-const canDelete = (experience) => {
-    return currentUserEmail && experience.author === currentUserEmail
-}
-
-const deleteExperience = async (id) => {
-    if (!confirm('Are you sure you want to delete this experience?')) return
-
-    try {
-        const token = localStorage.getItem('auth_token')
-        await axios.delete(`/api/experiences/${id}`, {
-            headers: { 'Authentication-Token': token }
-        })
-        
-        addToast('Experience deleted', 'success')
-        experiences.value = experiences.value.filter(e => e.id !== id)
-    } catch (err) {
         console.error(err)
         addToast('Failed to delete experience', 'error')
     }

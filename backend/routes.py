@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models import Experience, User
+from flask_security import auth_token_required, current_user
 
 api = Blueprint('api', __name__)
 

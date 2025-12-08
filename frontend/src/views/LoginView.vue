@@ -1,7 +1,7 @@
 import { ref } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
+import { useAuthStore } from '../stores/auth'
 
 const email = ref('')
 const password = ref('')
@@ -9,25 +9,17 @@ const error = ref('')
 const isSubmitting = ref(false)
 const router = useRouter()
 const { addToast } = useToast()
+const authStore = useAuthStore()
 
 const login = async () => {
     isSubmitting.value = true
     error.value = ''
     try {
-        const response = await axios.post('/login?include_auth_token', {
-            email: email.value,
-            password: password.value
-        })
+        const success = await authStore.login(email.value, password.value)
         
-        const token = response.data.response.user.authentication_token
-        
-        if (token) {
-            localStorage.setItem('auth_token', token)
-            localStorage.setItem('user_email', email.value)
-            localStorage.setItem('user_id', response.data.response.user.id)
+        if (success) {
             addToast('Welcome back!', 'success')
             router.push('/')
-            setTimeout(() => window.location.reload(), 100)
         } else {
             error.value = 'Login succeeded but no token received.'
         }

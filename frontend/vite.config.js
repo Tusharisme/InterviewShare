@@ -17,6 +17,14 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:5000',
         changeOrigin: true,
+      },
+      '/login': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+      },
+      '/register': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
       }
     }
   }

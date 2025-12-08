@@ -7,7 +7,7 @@
       <nav class="nav-links">
         <RouterLink to="/">Feed</RouterLink>
         
-        <template v-if="isLoggedIn">
+        <template v-if="authStore.isLoggedIn">
            <RouterLink to="/create" class="btn-link">Share Experience</RouterLink>
            <RouterLink to="/profile" class="nav-text">My Profile</RouterLink>
            <a href="#" @click.prevent="logout" class="nav-text">Logout</a>
@@ -40,15 +40,14 @@ import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import ToastContainer from './components/ToastContainer.vue'
 import { useToast } from './composables/useToast'
+import { useAuthStore } from './stores/auth'
 
-const isLoggedIn = ref(!!localStorage.getItem('auth_token'))
 const router = useRouter()
 const { addToast } = useToast()
+const authStore = useAuthStore()
 
 const logout = () => {
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('user_email')
-    isLoggedIn.value = false
+    authStore.logout()
     addToast('Logged out successfully', 'info')
     router.push('/login')
 }
