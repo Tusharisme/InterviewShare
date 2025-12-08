@@ -48,3 +48,32 @@ def delete_experience(id):
 
     return jsonify({'message': 'Experience deleted'}), 200
 
+@api.route('/experiences/<int:id>', methods=['GET'])
+def get_experience(id):
+    experience = Experience.query.get_or_404(id)
+    return jsonify(experience.to_dict()), 200
+
+@api.route('/experiences/<int:id>', methods=['PUT'])
+@auth_token_required
+def update_experience(id):
+    experience = Experience.query.get_or_404(id)
+    
+    if experience.user_id != current_user.id:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    data = request.get_json()
+    
+    if 'title' in data:
+        experience.title = data['title']
+    if 'company' in data:
+        experience.company = data['company']
+    if 'role_title' in data:
+        experience.role_title = data['role_title']
+    if 'content' in data:
+        experience.content = data['content']
+
+    db.session.commit()
+
+    return jsonify(experience.to_dict()), 200
+
+

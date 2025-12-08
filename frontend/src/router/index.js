@@ -24,9 +24,16 @@ const router = createRouter({
       name: 'create',
       component: () => import('../views/CreateView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/edit/:id',
+      name: 'edit',
+      component: () => import('../views/EditView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
+
 
 
 export default router

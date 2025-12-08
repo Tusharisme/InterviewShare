@@ -34,8 +34,12 @@ onMounted(async () => {
       <div v-for="experience in experiences" :key="experience.id" class="experience-card">
         <div class="card-header">
             <h2>{{ experience.title }}</h2>
-            <button v-if="canDelete(experience)" @click="deleteExperience(experience.id)" class="delete-btn">Delete</button>
+            <div v-if="canDelete(experience)" class="actions">
+                <button @click="router.push(`/edit/${experience.id}`)" class="edit-btn">Edit</button>
+                <button @click="deleteExperience(experience.id)" class="delete-btn">Delete</button>
+            </div>
         </div>
+
         <div class="meta">
             <span class="company">@ {{ experience.company }}</span>
             <span class="role">For: {{ experience.role_title }}</span>
@@ -50,11 +54,13 @@ onMounted(async () => {
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const experiences = ref([])
 const loading = ref(true)
 const error = ref(null)
 const currentUserEmail = localStorage.getItem('user_email')
+const router = useRouter()
 
 onMounted(async () => {
     fetchExperiences()
@@ -125,6 +131,22 @@ const deleteExperience = async (id) => {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.edit-btn {
+    background-color: #1890ff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+}
+
 
 .meta {
     margin-top: 0.5rem;
