@@ -8,10 +8,13 @@ const company = ref('')
 const role_title = ref('')
 const content = ref('')
 const error = ref('')
+const isSubmitting = ref(false)
 const router = useRouter()
 const { addToast } = useToast()
 
 const createExperience = async () => {
+    isSubmitting.value = true
+    error.value = ''
     try {
         const token = localStorage.getItem('auth_token')
         if (!token) {
@@ -40,6 +43,8 @@ const createExperience = async () => {
         const msg = 'Failed to create experience. Please try again.'
         error.value = msg
         addToast(msg, 'error')
+    } finally {
+        isSubmitting.value = false
     }
 }
 
@@ -68,7 +73,9 @@ const createExperience = async () => {
                     <textarea v-model="content" rows="10" required placeholder="Describe your interview process..."></textarea>
                 </div>
                 <div v-if="error" class="error-msg">{{ error }}</div>
-                <button type="submit" class="btn-primary" style="width: 100%">Publish Experience</button>
+                <button type="submit" class="btn-primary" style="width: 100%" :disabled="isSubmitting">
+                    {{ isSubmitting ? 'Publishing...' : 'Publish Experience' }}
+                </button>
             </form>
         </div>
     </div>

@@ -6,10 +6,13 @@ import { useToast } from '../composables/useToast'
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const isSubmitting = ref(false)
 const router = useRouter()
 const { addToast } = useToast()
 
 const register = async () => {
+    isSubmitting.value = true
+    error.value = ''
     try {
         await axios.post('/register', {
             email: email.value,
@@ -23,6 +26,8 @@ const register = async () => {
         console.error(err)
         error.value = err.response?.data?.response?.errors?.[0] || 'Registration failed'
         addToast(error.value, 'error')
+    } finally {
+        isSubmitting.value = false
     }
 }
 
@@ -41,7 +46,9 @@ const register = async () => {
                     <input v-model="password" type="password" required placeholder="Create a password" />
                 </div>
                 <div v-if="error" class="error-msg">{{ error }}</div>
-                <button type="submit" class="btn-primary" style="width: 100%">Register</button>
+                <button type="submit" class="btn-primary" style="width: 100%" :disabled="isSubmitting">
+                    {{ isSubmitting ? 'Creating Account...' : 'Register' }}
+                </button>
             </form>
             <p class="auth-footer">Already have an account? <RouterLink to="/login">Login here</RouterLink></p>
         </div>

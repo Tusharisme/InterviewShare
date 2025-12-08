@@ -6,10 +6,13 @@ import { useToast } from '../composables/useToast'
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const isSubmitting = ref(false)
 const router = useRouter()
 const { addToast } = useToast()
 
 const login = async () => {
+    isSubmitting.value = true
+    error.value = ''
     try {
         const response = await axios.post('/login?include_auth_token', {
             email: email.value,
@@ -21,7 +24,7 @@ const login = async () => {
         if (token) {
             localStorage.setItem('auth_token', token)
             localStorage.setItem('user_email', email.value)
-            localStorage.setItem('user_id', response.data.response.user.id) // Assuming Flask-Security returns ID
+            localStorage.setItem('user_id', response.data.response.user.id)
             addToast('Welcome back!', 'success')
             router.push('/')
             setTimeout(() => window.location.reload(), 100)
@@ -33,6 +36,8 @@ const login = async () => {
         console.error(err)
         error.value = err.response?.data?.response?.errors?.[0] || 'Invalid credentials'
         addToast(error.value, 'error')
+    } finally {
+        isSubmitting.value = false
     }
 }
 
@@ -51,7 +56,9 @@ const login = async () => {
                     <input v-model="password" type="password" required placeholder="Enter your password" />
                 </div>
                 <div v-if="error" class="error-msg">{{ error }}</div>
-                <button type="submit" class="btn-primary" style="width: 100%">Login</button>
+                <button type="submit" class="btn-primary" style="width: 100%" :disabled="isSubmitting">
+                    {{ isSubmitting ? 'Logging in...' : 'Login' }}
+                </button>
             </form>
             <p class="auth-footer">Don't have an account? <RouterLink to="/register">Register here</RouterLink></p>
         </div>
