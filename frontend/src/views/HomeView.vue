@@ -51,6 +51,7 @@ onMounted(async () => {
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
 const experiences = ref([])
 const loading = ref(true)
@@ -58,6 +59,7 @@ const error = ref(null)
 const searchQuery = ref('')
 const currentUserEmail = localStorage.getItem('user_email')
 const router = useRouter()
+const { addToast } = useToast()
 let searchTimeout = null
 
 onMounted(async () => {
@@ -76,6 +78,7 @@ const fetchExperiences = async () => {
   } catch (err) {
     console.error(err)
     error.value = 'Failed to load experiences.'
+    addToast('Failed to load experiences', 'error')
   } finally {
     loading.value = false
   }
@@ -100,10 +103,13 @@ const deleteExperience = async (id) => {
         await axios.delete(`/api/experiences/${id}`, {
             headers: { 'Authentication-Token': token }
         })
+        
+        addToast('Experience deleted', 'success')
         experiences.value = experiences.value.filter(e => e.id !== id)
     } catch (err) {
         console.error(err)
         alert('Failed to delete experience')
+        addToast('Failed to delete experience', 'error')
     }
 }
 </script>

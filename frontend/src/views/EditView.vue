@@ -1,7 +1,7 @@
-<script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
 const title = ref('')
 const company = ref('')
@@ -13,6 +13,7 @@ const loading = ref(true)
 const router = useRouter()
 const route = useRoute()
 const experienceId = route.params.id
+const { addToast } = useToast()
 
 onMounted(async () => {
     try {
@@ -25,6 +26,7 @@ onMounted(async () => {
     } catch (err) {
         console.error(err)
         error.value = 'Failed to load experience details.'
+        addToast('Failed to load experience details.', 'error')
     } finally {
         loading.value = false
     }
@@ -50,14 +52,17 @@ const updateExperience = async () => {
             }
         })
         
+        addToast('Experience updated successfully!', 'success')
         router.push('/')
 
     } catch (err) {
         console.error(err)
-        error.value = 'Failed to update experience. Please try again.'
+        const msg = 'Failed to update experience. Please try again.'
+        error.value = msg
+        addToast(msg, 'error')
     }
 }
-</script>
+
 
 <template>
     <div class="auth-container">

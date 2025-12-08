@@ -1,30 +1,31 @@
-<script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const router = useRouter()
+const { addToast } = useToast()
 
 const register = async () => {
     try {
-        // Flask-Security default register endpoint
         await axios.post('/register', {
             email: email.value,
             password: password.value
         })
         
-        // After registration, redirect to login
+        addToast('Registration successful! Please login.', 'success')
         router.push('/login')
 
     } catch (err) {
         console.error(err)
         error.value = err.response?.data?.response?.errors?.[0] || 'Registration failed'
+        addToast(error.value, 'error')
     }
 }
-</script>
+
 
 <template>
     <div class="auth-container">

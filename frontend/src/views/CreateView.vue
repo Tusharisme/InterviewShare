@@ -1,7 +1,7 @@
-<script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
 const title = ref('')
 const company = ref('')
@@ -9,11 +9,13 @@ const role_title = ref('')
 const content = ref('')
 const error = ref('')
 const router = useRouter()
+const { addToast } = useToast()
 
 const createExperience = async () => {
     try {
         const token = localStorage.getItem('auth_token')
         if (!token) {
+            addToast('You must be logged in to share.', 'warning')
             router.push('/login')
             return
         }
@@ -30,14 +32,17 @@ const createExperience = async () => {
             }
         })
         
+        addToast('Experience published successfully!', 'success')
         router.push('/')
 
     } catch (err) {
         console.error(err)
-        error.value = 'Failed to create experience. Please try again.'
+        const msg = 'Failed to create experience. Please try again.'
+        error.value = msg
+        addToast(msg, 'error')
     }
 }
-</script>
+
 
 <template>
     <div class="auth-container">
