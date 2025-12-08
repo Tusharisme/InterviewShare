@@ -1,66 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
-const experiences = ref([])
-const loading = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/experiences')
-    experiences.value = response.data
-  } catch (err) {
-    console.error(err)
-    error.value = 'Failed to load experiences.'
-  } finally {
-        <h3>No experiences yet</h3>
-        <p>Be the first to share your interview journey!</p>
-      </div>
-      
-      <div v-for="experience in experiences" :key="experience.id" class="card experience-card">
-        <div class="card-header">
-            <h2>{{ experience.title }}</h2>
-            <div v-if="canDelete(experience)" class="actions">
-                <button @click="router.push(`/edit/${experience.id}`)" class="btn-sm btn-edit">Edit</button>
-                <button @click="deleteExperience(experience.id)" class="btn-sm btn-delete">Delete</button>
-            </div>
-        </div>
-        
-        <div class="meta-row">
-            <span class="badge badge-primary">{{ experience.company }}</span>
-            <span class="badge badge-secondary">{{ experience.role_title }}</span>
-            <span class="date">{{ new Date(experience.created_at).toLocaleDateString() }}</span>
-        </div>
-        
-        <p class="preview">{{ experience.content }}</p>
-        
-        <div class="footer-row">
-            <div class="author-info">
-                <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
-                <div class="author-details">
-                    <span class="author-name">{{ experience.author }}</span>
-                    <span class="author-label">Shared 1 min read</span>
-                </div>
-            </div>
-            
-            <button 
-                @click="toggleLike(experience)" 
-                class="like-btn" 
-                :class="{ 'liked': experience.isLiked }"
-            >
-                <span class="heart-icon">{{ experience.isLiked ? '❤️' : '🤍' }}</span>
-                <span class="like-count">{{ experience.likes_count }}</span>
-            </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
 
@@ -88,7 +28,8 @@ const fetchExperiences = async () => {
     const response = await axios.get('/api/experiences', { params })
     experiences.value = response.data.map(exp => ({
         ...exp,
-        isLiked: exp.liker_ids.includes(currentUserId)
+        // Calculate isLiked based on liker_ids array from backend
+        isLiked: exp.liker_ids ? exp.liker_ids.includes(currentUserId) : false
     }))
   } catch (err) {
     console.error(err)
@@ -149,11 +90,75 @@ const deleteExperience = async (id) => {
         experiences.value = experiences.value.filter(e => e.id !== id)
     } catch (err) {
         console.error(err)
-        alert('Failed to delete experience')
         addToast('Failed to delete experience', 'error')
     }
 }
 </script>
+
+<template>
+  <div class="home">
+    <div class="head-section">
+        <h1>Latest Interview Experiences</h1>
+        <div class="search-box">
+            <input 
+                v-model="searchQuery" 
+                @input="handleSearch" 
+                type="text" 
+                placeholder="Search companies or roles..." 
+                class="search-input"
+            />
+        </div>
+    </div>
+    
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    
+    <div v-else class="experiences-list">
+      <div v-if="experiences.length === 0" class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No experiences yet</h3>
+        <p>Be the first to share your interview journey!</p>
+      </div>
+      
+      <div v-for="experience in experiences" :key="experience.id" class="card experience-card">
+        <div class="card-header">
+            <h2>{{ experience.title }}</h2>
+            <div v-if="canDelete(experience)" class="actions">
+                <button @click="router.push(`/edit/${experience.id}`)" class="btn-sm btn-edit">Edit</button>
+                <button @click="deleteExperience(experience.id)" class="btn-sm btn-delete">Delete</button>
+            </div>
+        </div>
+        
+        <div class="meta-row">
+            <span class="badge badge-primary">{{ experience.company }}</span>
+            <span class="badge badge-secondary">{{ experience.role_title }}</span>
+            <span class="date">{{ new Date(experience.created_at).toLocaleDateString() }}</span>
+        </div>
+        
+        <p class="preview">{{ experience.content }}</p>
+        
+        <div class="footer-row">
+            <div class="author-info">
+                <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
+                <div class="author-details">
+                    <span class="author-name">{{ experience.author }}</span>
+                    <span class="author-label">Shared 1 min read</span>
+                </div>
+            </div>
+            
+            <button 
+                @click="toggleLike(experience)" 
+                class="like-btn" 
+                :class="{ 'liked': experience.isLiked }"
+            >
+                <span class="heart-icon">{{ experience.isLiked ? '❤️' : '🤍' }}</span>
+                <span class="like-count">{{ experience.likes_count }}</span>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .head-section {
