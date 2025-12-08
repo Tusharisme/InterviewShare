@@ -9,6 +9,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/" class="brand">InterviewShare</RouterLink>
         <div class="links">
             <RouterLink to="/">Home</RouterLink>
+            <RouterLink v-if="isLoggedIn" to="/create">Share Experience</RouterLink>
             <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
             <RouterLink v-if="!isLoggedIn" to="/register">Register</RouterLink>
             <a v-if="isLoggedIn" href="#" @click.prevent="logout">Logout</a>
