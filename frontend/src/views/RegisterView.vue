@@ -1,3 +1,4 @@
+<script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
@@ -24,12 +25,25 @@ const register = async () => {
 
     } catch (err) {
         console.error(err)
-        error.value = err.response?.data?.response?.errors?.[0] || 'Registration failed'
+        const responseErrors = err.response?.data?.response?.errors
+        
+        if (Array.isArray(responseErrors) && responseErrors.length > 0) {
+            error.value = responseErrors[0]
+        } else if (err.response?.data?.response?.field_errors) {
+            // Handle field-specific errors often returned by Flask-Security
+            const fieldErrors = err.response.data.response.field_errors
+            const firstField = Object.keys(fieldErrors)[0]
+            error.value = fieldErrors[firstField][0]
+        } else {
+             error.value = 'Registration failed. Please check your details.'
+        }
+        
         addToast(error.value, 'error')
     } finally {
         isSubmitting.value = false
     }
 }
+</script>
 
 
 <template>

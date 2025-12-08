@@ -49,7 +49,7 @@ class Experience(db.Model):
             'content': self.content,
             'created_at': self.created_at.isoformat(),
             'author': self.author.email,
-            'likes_count': self.liked_by.count(),
+            'likes_count': len(self.liked_by),
             # We can't easily check 'is_liked' here without context of current user, 
             # so we'll handle that on the frontend or a separate field if needed.
             # For simplicity, we'll return the list of liker IDs or just the count.

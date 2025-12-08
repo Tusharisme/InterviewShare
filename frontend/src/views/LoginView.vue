@@ -1,3 +1,4 @@
+<script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
@@ -26,12 +27,21 @@ const login = async () => {
 
     } catch (err) {
         console.error(err)
-        error.value = err.response?.data?.response?.errors?.[0] || 'Invalid credentials'
+        // Extract error message properly from Flask-Security response
+        const responseErrors = err.response?.data?.response?.errors
+        if (Array.isArray(responseErrors) && responseErrors.length > 0) {
+            error.value = responseErrors[0]
+        } else if (err.response?.data?.meta?.code === 400) {
+            error.value = 'Invalid email or password'
+        } else {
+            error.value = 'An unexpected error occurred. Please try again.'
+        }
         addToast(error.value, 'error')
     } finally {
         isSubmitting.value = false
     }
 }
+</script>
 
 
 <template>

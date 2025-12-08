@@ -41,7 +41,7 @@ def toggle_like(id):
     
     return jsonify({
         'message': f'Experience {action}',
-        'likes_count': experience.liked_by.count(),
+        'likes_count': len(experience.liked_by),
         'action': action
     }), 200
 

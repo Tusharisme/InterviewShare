@@ -39,16 +39,24 @@ export const useAuthStore = defineStore('auth', () => {
     const newToken = responseData.authentication_token
     const newId = responseData.id
     
+    // Sometimes Flask-Security returns success but no token if already logged in differently
+    // In strict API mode, we should just get the token.
     if (newToken) {
         setAuth(newToken, email, newId)
         return true
+    } else {
+         // Should not happen for API login, but if it does, consider it fail
+        return false
     }
-    return false
   }
 
-  function logout() {
+  async function logout() {
+    try {
+        await axios.get('/logout')
+    } catch (e) {
+        // Ignore error if already logged out
+    }
     clearAuth()
-    // Optional: Call backend logout endpoint if needed
   }
 
   return { 
