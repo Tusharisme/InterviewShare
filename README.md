@@ -1,29 +1,66 @@
 # InterviewShare 🎓
 
-**InterviewShare** is a community-driven platform designed to help students ace their placements. It enables users to share their detailed interview experiences, browse through the journeys of others, and gain valuable insights into company-specific recruitment processes.
+**InterviewShare** is a full-stack web application designed to help students share and browse interview experiences. Built with Flask and Vue.js, it offers a secure and interactive platform for placement preparation.
 
-## 🚀 Vision
-To democratize access to interview knowledge and help every student prepare better by learning from real-world experiences.
+## 🌟 Features
+- **User Authentication**: Secure Login and Registration (Flask-Security).
+- **Share Experiences**: Post detailed interview experiences (Company, Role, Description).
+- **Browse Feed**: View experiences shared by other students.
+- **Manage Content**: Delete your own posts.
+- **Responsive Design**: Modern UI built with Vue.js.
 
 ## 🛠 Tech Stack
-This project leverages a modern full-stack architecture:
+- **Backend**: Flask, Flask-SQLAlchemy, Flask-Security, SQLite.
+- **Frontend**: Vue.js 3, Vite, Axios, Vue Router.
 
-### Backend
-- **Language**: Python 3
-- **Framework**: Flask (RESTful APIs)
-- **Database**: SQLite (Development) / PostgreSQL (Production)
-- **ORM**: SQLAlchemy
-- **Authentication**: Flask-Security / JWT
+## 🚀 Getting Started
 
-### Frontend
-- **Framework**: Vue.js 3
-- **Build Tool**: Vite
-- **Styling**: CSS3 / Custom Design System
-- **HTTP Client**: Axios
+### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- Git
 
-## 📦 Project Structure
-- `/backend`: Contains the Flask API, database models, and logic.
-- `/frontend`: Contains the Vue.js user interface.
+### backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the application:
+   ```bash
+   python app.py
+   ```
+   The API will be available at `http://localhost:5000`.
 
-## 🏁 Getting Started
-*(Instructions for setup will be added as development progresses)*
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+## 📝 API Documentation
+- **POST /register**: Register a new user.
+- **POST /login**: Authenticate user and receive token.
+- **GET /api/experiences**: List all experiences.
+- **POST /api/experiences**: Create a new experience (Auth required).
+- **DELETE /api/experiences/<id>**: Delete an experience (Auth required).
+
+## 📄 License
+MIT
