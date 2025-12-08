@@ -1,9 +1,18 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from config import Config
+from extensions import db
+from models import User, Role
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(Config)
+    
     CORS(app)
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
 
     @app.route('/')
     def index():
