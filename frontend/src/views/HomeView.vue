@@ -22,6 +22,68 @@ const fetchExperiences = async () => {
   loading.value = true
   try {
     const params = {}
+    if (searchQuery.value) {
+        params.q = searchQuery.value
+    }
+    const response = await axios.get('/api/experiences', { params })
+    experiences.value = response.data.map(exp => ({
+        ...exp,
+        isLiked: exp.liker_ids ? exp.liker_ids.includes(authStore.userId) : false
+    }))
+  } catch (err) {
+    console.error(err)
+    error.value = 'Failed to load experiences.'
+    addToast('Failed to load experiences', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(() => {
+        fetchExperiences()
+    }, 300)
+}
+
+const toggleLike = async (experience) => {
+    if (!authStore.isLoggedIn) {
+        addToast('Please login to like posts', 'warning')
+        return
+    }
+
+    const previousState = experience.isLiked
+    const previousCount = experience.likes_count
+    
+    experience.isLiked = !experience.isLiked
+    experience.likes_count += experience.isLiked ? 1 : -1
+
+    try {
+        await axios.post(`/api/experiences/${experience.id}/like`, {}, {
+            headers: { 'Authentication-Token': authStore.token }
+        })
+    } catch (err) {
+        experience.isLiked = previousState
+        experience.likes_count = previousCount
+        addToast('Failed to like post', 'error')
+    }
+}
+
+const canDelete = (experience) => {
+    return authStore.userEmail && experience.author === authStore.userEmail
+}
+
+const deleteExperience = async (id) => {
+    if (!confirm('Are you sure you want to delete this experience?')) return
+
+    try {
+        await axios.delete(`/api/experiences/${id}`, {
+            headers: { 'Authentication-Token': authStore.token }
+        })
+        
+        addToast('Experience deleted', 'success')
+        experiences.value = experiences.value.filter(e => e.id !== id)
+    } catch (err) {
         console.error(err)
         addToast('Failed to delete experience', 'error')
     }
