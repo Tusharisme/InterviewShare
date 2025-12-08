@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
+import { useAuthStore } from '../stores/auth'
 
 const title = ref('')
 const company = ref('')
@@ -11,13 +12,13 @@ const error = ref('')
 const isSubmitting = ref(false)
 const router = useRouter()
 const { addToast } = useToast()
+const authStore = useAuthStore()
 
 const createExperience = async () => {
     isSubmitting.value = true
     error.value = ''
     try {
-        const token = localStorage.getItem('auth_token')
-        if (!token) {
+        if (!authStore.token) {
             addToast('You must be logged in to share.', 'warning')
             router.push('/login')
             return
@@ -30,7 +31,7 @@ const createExperience = async () => {
             content: content.value
         }, {
             headers: {
-                'Authentication-Token': token,
+                'Authentication-Token': authStore.token,
                 'Content-Type': 'application/json'
             }
         })

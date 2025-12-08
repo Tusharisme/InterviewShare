@@ -2,6 +2,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 import { useToast } from '../composables/useToast'
+import { useAuthStore } from '../stores/auth'
 
 const title = ref('')
 const company = ref('')
@@ -14,6 +15,7 @@ const router = useRouter()
 const route = useRoute()
 const experienceId = route.params.id
 const { addToast } = useToast()
+const authStore = useAuthStore()
 
 onMounted(async () => {
     try {
@@ -34,8 +36,7 @@ onMounted(async () => {
 
 const updateExperience = async () => {
     try {
-        const token = localStorage.getItem('auth_token')
-        if (!token) {
+        if (!authStore.token) {
             router.push('/login')
             return
         }
@@ -47,7 +48,7 @@ const updateExperience = async () => {
             content: content.value
         }, {
             headers: {
-                'Authentication-Token': token,
+                'Authentication-Token': authStore.token,
                 'Content-Type': 'application/json'
             }
         })

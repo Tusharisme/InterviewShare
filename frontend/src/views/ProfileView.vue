@@ -42,12 +42,14 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '../composables/useToast'
+import { useAuthStore } from '../stores/auth'
 
 const experiences = ref([])
 const loading = ref(true)
 const error = ref(null)
 const router = useRouter()
 const { addToast } = useToast()
+const authStore = useAuthStore()
 
 onMounted(async () => {
     fetchMyExperiences()
@@ -56,9 +58,8 @@ onMounted(async () => {
 const fetchMyExperiences = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('auth_token')
     const response = await axios.get('/api/experiences/me', {
-         headers: { 'Authentication-Token': token }
+         headers: { 'Authentication-Token': authStore.token }
     })
     experiences.value = response.data
   } catch (err) {
@@ -74,9 +75,8 @@ const deleteExperience = async (id) => {
     if (!confirm('Are you sure you want to delete this experience?')) return
 
     try {
-        const token = localStorage.getItem('auth_token')
         await axios.delete(`/api/experiences/${id}`, {
-            headers: { 'Authentication-Token': token }
+            headers: { 'Authentication-Token': authStore.token }
         })
         
         addToast('Experience deleted', 'success')
