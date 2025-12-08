@@ -15,4 +15,5 @@ class Config:
     SECURITY_UNAUTHORIZED_VIEW = None
     WTF_CSRF_ENABLED = False 
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
+    SECURITY_PASSWORD_LENGTH_MIN = 6  # Allow shorter passwords for development
 
