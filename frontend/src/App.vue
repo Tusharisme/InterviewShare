@@ -1,26 +1,34 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
   <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/" class="brand">InterviewShare</RouterLink>
-        <div class="links">
-            <RouterLink to="/">Home</RouterLink>
-            <RouterLink v-if="isLoggedIn" to="/create">Share Experience</RouterLink>
-            <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
-            <RouterLink v-if="!isLoggedIn" to="/register">Register</RouterLink>
-            <a v-if="isLoggedIn" href="#" @click.prevent="logout">Logout</a>
-        </div>
+    <div class="container navbar">
+      <RouterLink to="/" class="brand">
+        <span class="logo-icon">🎓</span> InterviewShare
+      </RouterLink>
+      <nav class="nav-links">
+        <RouterLink to="/">Feed</RouterLink>
+        
+        <template v-if="isLoggedIn">
+           <RouterLink to="/create" class="btn-link">Share Experience</RouterLink>
+           <a href="#" @click.prevent="logout" class="nav-text">Logout</a>
+        </template>
+        
+        <template v-else>
+          <RouterLink to="/login" class="nav-text">Login</RouterLink>
+          <RouterLink to="/register" class="btn-primary-sm">Get Started</RouterLink>
+        </template>
       </nav>
     </div>
   </header>
 
-  <main>
+  <main class="container">
     <RouterView />
   </main>
+  
+  <footer>
+    <div class="container">
+        InterviewShare &copy; 2024. Built for Students.
+    </div>
+  </footer>
 </template>
 
 <script setup>
@@ -40,50 +48,86 @@ const logout = () => {
 
 <style scoped>
 header {
-  line-height: 1.5;
-  background-color: var(--color-background-soft);
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--color-border);
+  background-color: white;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
 }
 
-.wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-nav {
-  width: 100%;
+.navbar {
+  height: 70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--color-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-links a:not([class]) {
+    color: var(--slate-500);
+    font-weight: 600;
+}
+.nav-links a:not([class]):hover {
+    color: var(--primary-600);
+}
+
+.nav-text {
+    color: var(--slate-500);
+    font-weight: 600;
+}
+.nav-text:hover {
+    color: var(--slate-800);
+}
+
+.btn-primary-sm {
+    background-color: var(--primary-600);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.btn-primary-sm:hover {
+    background-color: var(--primary-700);
     text-decoration: none;
 }
 
-.links a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.links a:first-of-type {
-  border: 0;
+.btn-link {
+    color: var(--primary-600);
+    font-weight: 600;
 }
 
 main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    flex: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+footer {
+    padding: 2rem 0;
+    background-color: white;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
 }
 </style>
