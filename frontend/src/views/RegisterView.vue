@@ -28,65 +28,46 @@ const register = async () => {
 
 <template>
     <div class="auth-container">
-        <h1>Register</h1>
-        <form @submit.prevent="register">
-            <div class="form-group">
-                <label>Email</label>
-                <input v-model="email" type="email" required placeholder="Enter your email" />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input v-model="password" type="password" required placeholder="Create a password" />
-            </div>
-            <div v-if="error" class="error">{{ error }}</div>
-            <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <RouterLink to="/login">Login here</RouterLink></p>
+        <div class="card">
+            <h1>Register</h1>
+            <form @submit.prevent="register">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input v-model="email" type="email" required placeholder="Enter your email" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input v-model="password" type="password" required placeholder="Create a password" />
+                </div>
+                <div v-if="error" class="error-msg">{{ error }}</div>
+                <button type="submit" class="btn-primary" style="width: 100%">Register</button>
+            </form>
+            <p class="auth-footer">Already have an account? <RouterLink to="/login">Login here</RouterLink></p>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .auth-container {
-    max-width: 400px;
+    max-width: 450px;
     margin: 2rem auto;
-    padding: 2rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
 }
 
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    width: 100%;
+.error-msg {
+    color: var(--color-danger);
+    background-color: #fef2f2;
     padding: 0.75rem;
-    background-color: hsla(160, 100%, 37%, 1);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-button:hover {
-    background-color: hsla(160, 100%, 30%, 1);
-}
-
-.error {
-    color: red;
+    border-radius: var(--border-radius);
     margin-bottom: 1rem;
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--slate-500);
 }
 </style>

@@ -40,85 +40,56 @@ const createExperience = async () => {
 </script>
 
 <template>
-    <div class="create-container">
-        <h1>Share Interview Experience</h1>
-        <form @submit.prevent="createExperience">
-            <div class="form-group">
-                <label>Title</label>
-                <input v-model="title" type="text" required placeholder="e.g. SDE-1 Interview at Google" />
-            </div>
-            <div class="form-group two-col">
-                <div>
-                    <label>Company</label>
-                    <input v-model="company" type="text" required placeholder="e.g. Google" />
+    <div class="auth-container">
+        <div class="card">
+            <h1>Share Interview Experience</h1>
+            <form @submit.prevent="createExperience">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input v-model="title" type="text" required placeholder="e.g. SDE-1 Interview at Google" />
                 </div>
-                <div>
-                    <label>Role</label>
-                    <input v-model="role_title" type="text" required placeholder="e.g. Software Engineer" />
+                <div class="form-group two-col">
+                    <div>
+                        <label>Company</label>
+                        <input v-model="company" type="text" required placeholder="e.g. Google" />
+                    </div>
+                    <div>
+                        <label>Role</label>
+                        <input v-model="role_title" type="text" required placeholder="e.g. Software Engineer" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Experience Content</label>
-                <textarea v-model="content" rows="10" required placeholder="Describe your interview process..."></textarea>
-            </div>
-            <div v-if="error" class="error">{{ error }}</div>
-            <button type="submit">Publish Experience</button>
-        </form>
+                <div class="form-group">
+                    <label>Experience Content</label>
+                    <textarea v-model="content" rows="10" required placeholder="Describe your interview process..."></textarea>
+                </div>
+                <div v-if="error" class="error-msg">{{ error }}</div>
+                <button type="submit" class="btn-primary" style="width: 100%">Publish Experience</button>
+            </form>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.create-container {
+.auth-container {
     max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background-color: var(--color-background-soft);
+    margin: 0 auto;
 }
 
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: inherit;
-}
-
-button {
-    width: 100%;
-    padding: 1rem;
-    background-color: hsla(160, 100%, 37%, 1);
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-button:hover {
-    background-color: hsla(160, 100%, 30%, 1);
-}
-
-.error {
-    color: red;
+.error-msg {
+    color: var(--color-danger);
+    background-color: #fef2f2;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
     margin-bottom: 1rem;
 }
 </style>

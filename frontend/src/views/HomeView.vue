@@ -28,24 +28,35 @@ onMounted(async () => {
     
     <div v-else class="experiences-list">
       <div v-if="experiences.length === 0" class="empty-state">
-        No experiences shared yet. Be the first!
+        <div class="empty-icon">📝</div>
+        <h3>No experiences yet</h3>
+        <p>Be the first to share your interview journey!</p>
       </div>
       
-      <div v-for="experience in experiences" :key="experience.id" class="experience-card">
+      <div v-for="experience in experiences" :key="experience.id" class="card experience-card">
         <div class="card-header">
             <h2>{{ experience.title }}</h2>
             <div v-if="canDelete(experience)" class="actions">
-                <button @click="router.push(`/edit/${experience.id}`)" class="edit-btn">Edit</button>
-                <button @click="deleteExperience(experience.id)" class="delete-btn">Delete</button>
+                <button @click="router.push(`/edit/${experience.id}`)" class="btn-sm btn-edit">Edit</button>
+                <button @click="deleteExperience(experience.id)" class="btn-sm btn-delete">Delete</button>
             </div>
         </div>
-
-        <div class="meta">
-            <span class="company">@ {{ experience.company }}</span>
-            <span class="role">For: {{ experience.role_title }}</span>
+        
+        <div class="meta-row">
+            <span class="badge badge-primary">{{ experience.company }}</span>
+            <span class="badge badge-secondary">{{ experience.role_title }}</span>
+            <span class="date">{{ new Date(experience.created_at).toLocaleDateString() }}</span>
         </div>
-        <p class="preview">{{ experience.content.substring(0, 150) }}...</p>
-        <div class="author">By: {{ experience.author }}</div>
+        
+        <p class="preview">{{ experience.content }}</p>
+        
+        <div class="author-row">
+            <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
+            <div class="author-info">
+                <span class="author-name">{{ experience.author }}</span>
+                <span class="author-label">Shared 1 min read</span>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -90,7 +101,6 @@ const deleteExperience = async (id) => {
         await axios.delete(`/api/experiences/${id}`, {
             headers: { 'Authentication-Token': token }
         })
-        // Refresh list
         experiences.value = experiences.value.filter(e => e.id !== id)
     } catch (err) {
         console.error(err)
@@ -100,74 +110,138 @@ const deleteExperience = async (id) => {
 </script>
 
 <style scoped>
-.home {
-    padding: 1rem;
+.head-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: var(--border-radius-lg);
+    border: 1px dashed var(--slate-300);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
 .experience-card {
-    border: 1px solid var(--color-border);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    background-color: var(--color-background-soft);
+    margin-bottom: 1.5rem;
+    background: white;
+}
+
+.experience-card h2 {
+    font-size: 1.25rem;
+    color: var(--slate-900);
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    margin-bottom: 1rem;
 }
 
-.experience-card h2 {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.delete-btn {
-    background-color: #ff4d4f;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.edit-btn {
-    background-color: #1890ff;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 0.5rem;
-}
-
-.actions {
+.meta-row {
     display: flex;
+    gap: 0.5rem;
     align-items: center;
+    margin-bottom: 1.25rem;
 }
 
-
-.meta {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
-.meta span {
-    margin-right: 1rem;
-    font-weight: bold;
+.badge-primary {
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.badge-secondary {
+    background-color: var(--slate-100);
+    color: var(--slate-600);
+}
+
+.date {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: var(--slate-400);
 }
 
 .preview {
-    color: var(--color-text);
+    color: var(--slate-600);
+    margin-bottom: 1.5rem;
+    white-space: pre-wrap;
 }
 
-.author {
-    margin-top: 1rem;
+.author-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--slate-100);
+}
+
+.avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    background-color: var(--primary-100);
+    color: var(--primary-600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.author-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.author-label {
     font-size: 0.8rem;
-    font-style: italic;
-    color: #888;
+    color: var(--slate-400);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-edit {
+    background-color: var(--slate-100);
+    color: var(--slate-700);
+}
+.btn-edit:hover {
+    background-color: var(--slate-200);
+}
+
+.btn-delete {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+.btn-delete:hover {
+    background-color: #fecaca;
 }
 </style>
