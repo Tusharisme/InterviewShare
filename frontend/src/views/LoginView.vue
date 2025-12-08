@@ -1,12 +1,13 @@
-<script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const router = useRouter()
+const { addToast } = useToast()
 
 const login = async () => {
     try {
@@ -15,18 +16,13 @@ const login = async () => {
             password: password.value
         })
         
-        // Flask-Security returns the token in specific ways depending on config
-        // Default with JSON: response.data.response.user.authentication_token or similar
-        // Let's inspect the response in dev, but for now assume standard
-        
         const token = response.data.response.user.authentication_token
         
         if (token) {
             localStorage.setItem('auth_token', token)
             localStorage.setItem('user_email', email.value)
-            // Redirect to home or dashboard
+            addToast('Welcome back!', 'success')
             router.push('/')
-            // Simple force reload to update nav state (can be improved with store)
             setTimeout(() => window.location.reload(), 100)
         } else {
             error.value = 'Login succeeded but no token received.'
@@ -35,9 +31,10 @@ const login = async () => {
     } catch (err) {
         console.error(err)
         error.value = err.response?.data?.response?.errors?.[0] || 'Invalid credentials'
+        addToast(error.value, 'error')
     }
 }
-</script>
+
 
 <template>
     <div class="auth-container">

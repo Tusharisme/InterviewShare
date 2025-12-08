@@ -29,22 +29,29 @@
         InterviewShare &copy; 2024. Built for Students.
     </div>
   </footer>
+  
+  <ToastContainer />
 </template>
 
 <script setup>
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import ToastContainer from './components/ToastContainer.vue'
+import { useToast } from './composables/useToast'
 
 const isLoggedIn = ref(!!localStorage.getItem('auth_token'))
 const router = useRouter()
+const { addToast } = useToast()
 
 const logout = () => {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('user_email')
     isLoggedIn.value = false
+    addToast('Logged out successfully', 'info')
     router.push('/login')
 }
 </script>
+
 
 <style scoped>
 header {
