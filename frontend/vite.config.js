@@ -25,6 +25,10 @@ export default defineConfig({
       '/register': {
         target: 'http://127.0.0.1:5000',
         changeOrigin: true,
+      },
+      '/logout': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
       }
     }
   }

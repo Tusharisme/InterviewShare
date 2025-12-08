@@ -130,11 +130,15 @@ const deleteExperience = async (id) => {
             <span class="date">{{ new Date(experience.created_at).toLocaleDateString() }}</span>
         </div>
         
-        <p class="preview">{{ experience.content }}</p>
+        <div class="preview-container">
+            <p class="preview" :class="{ 'blur-content': !authStore.isLoggedIn }">{{ experience.content }}</p>
+            <div v-if="!authStore.isLoggedIn" class="lock-overlay">
+                <span class="lock-icon">🔒</span>
+                <span class="lock-message">Login to view full experience</span>
+                <RouterLink to="/login" class="btn-primary-sm" style="display: inline-block;">Login Now</RouterLink>
+            </div>
+        </div>
         
-        <div class="footer-row">
-            <div class="author-info">
-                <div class="avatar-placeholder">{{ experience.author.charAt(0).toUpperCase() }}</div>
                 <div class="author-details">
                     <span class="author-name">{{ experience.author }}</span>
                     <span class="author-label">Shared 1 min read</span>
@@ -156,6 +160,47 @@ const deleteExperience = async (id) => {
 </template>
 
 <style scoped>
+.preview-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+/* Blur effect when not logged in */
+.blur-content {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+.lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    width: 80%;
+    border: 1px solid var(--slate-200);
+    z-index: 10;
+}
+
+.lock-message {
+    color: var(--slate-800);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.lock-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
 .head-section {
     margin-bottom: 2rem;
     text-align: center;

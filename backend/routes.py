@@ -4,6 +4,7 @@ from models import Experience, User
 from flask_security import auth_token_required, current_user
 
 api = Blueprint('api', __name__)
+# We've globally disabled CSRF in config, but explicitly ensures no issues for this BP
 
 @api.route('/experiences', methods=['GET'])
 def get_experiences():

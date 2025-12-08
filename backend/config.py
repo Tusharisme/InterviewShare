@@ -13,7 +13,11 @@ class Config:
     SECURITY_REGISTERABLE = True
     SECURITY_SEND_REGISTER_EMAIL = False
     SECURITY_UNAUTHORIZED_VIEW = None
+    SECURITY_UNAUTHORIZED_VIEW = None
     WTF_CSRF_ENABLED = False 
+    WTF_CSRF_CHECK_DEFAULT = False # Strict CSRF protection can block API calls
+    SECURITY_CSRF_PROTECT_MECHANISMS = [] # Disable CSRF mechanisms for API
+    SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS = True
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
     SECURITY_PASSWORD_LENGTH_MIN = 6  # Allow shorter passwords for development
 

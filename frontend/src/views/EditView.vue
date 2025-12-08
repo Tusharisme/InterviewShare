@@ -1,3 +1,4 @@
+<script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
@@ -63,6 +64,7 @@ const updateExperience = async () => {
         addToast(msg, 'error')
     }
 }
+</script>
 
 
 <template>
