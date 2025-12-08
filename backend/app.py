@@ -14,6 +14,9 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    from routes import api
+    app.register_blueprint(api, url_prefix='/api')
+
     @app.route('/')
     def index():
         return jsonify({"message": "Welcome to InterviewShare API", "status": "running"})
