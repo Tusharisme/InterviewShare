@@ -58,8 +58,9 @@
 ## 📝 API Documentation
 - **POST /register**: Register a new user.
 - **POST /login**: Authenticate user and receive token.
-- **GET /api/experiences**: List all experiences.
+- **GET /api/experiences?q=<query>**: List all experiences, optionally filtered by query.
 - **GET /api/experiences/<id>**: Get details of a single experience.
+
 - **POST /api/experiences**: Create a new experience (Auth required).
 - **PUT /api/experiences/<id>**: Update an experience (Auth required).
 - **DELETE /api/experiences/<id>**: Delete an experience (Auth required).
