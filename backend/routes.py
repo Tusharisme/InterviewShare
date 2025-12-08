@@ -34,3 +34,17 @@ def create_experience():
     db.session.commit()
 
     return jsonify(new_experience.to_dict()), 201
+
+@api.route('/experiences/<int:id>', methods=['DELETE'])
+@auth_token_required
+def delete_experience(id):
+    experience = Experience.query.get_or_404(id)
+    
+    if experience.user_id != current_user.id:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    db.session.delete(experience)
+    db.session.commit()
+
+    return jsonify({'message': 'Experience deleted'}), 200
+

@@ -32,7 +32,10 @@ onMounted(async () => {
       </div>
       
       <div v-for="experience in experiences" :key="experience.id" class="experience-card">
-        <h2>{{ experience.title }}</h2>
+        <div class="card-header">
+            <h2>{{ experience.title }}</h2>
+            <button v-if="canDelete(experience)" @click="deleteExperience(experience.id)" class="delete-btn">Delete</button>
+        </div>
         <div class="meta">
             <span class="company">@ {{ experience.company }}</span>
             <span class="role">For: {{ experience.role_title }}</span>
@@ -43,6 +46,52 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+const experiences = ref([])
+const loading = ref(true)
+const error = ref(null)
+const currentUserEmail = localStorage.getItem('user_email')
+
+onMounted(async () => {
+    fetchExperiences()
+})
+
+const fetchExperiences = async () => {
+  try {
+    const response = await axios.get('/api/experiences')
+    experiences.value = response.data
+  } catch (err) {
+    console.error(err)
+    error.value = 'Failed to load experiences.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const canDelete = (experience) => {
+    return currentUserEmail && experience.author === currentUserEmail
+}
+
+const deleteExperience = async (id) => {
+    if (!confirm('Are you sure you want to delete this experience?')) return
+
+    try {
+        const token = localStorage.getItem('auth_token')
+        await axios.delete(`/api/experiences/${id}`, {
+            headers: { 'Authentication-Token': token }
+        })
+        // Refresh list
+        experiences.value = experiences.value.filter(e => e.id !== id)
+    } catch (err) {
+        console.error(err)
+        alert('Failed to delete experience')
+    }
+}
+</script>
 
 <style scoped>
 .home {
@@ -57,11 +106,28 @@ onMounted(async () => {
     background-color: var(--color-background-soft);
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .experience-card h2 {
     margin-top: 0;
+    margin-bottom: 0;
+}
+
+.delete-btn {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .meta {
+    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
     color: #666;
     font-size: 0.9rem;
