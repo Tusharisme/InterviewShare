@@ -1,38 +1,9 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "backend/app.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/backend/app.py"
-        },
-        {
-            "src": "/login",
-            "dest": "/backend/app.py"
-        },
-        {
-            "src": "/register",
-            "dest": "/backend/app.py"
-        },
-        {
-            "src": "/logout",
-            "dest": "/backend/app.py"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
-        }
+    "rewrites": [
+        { "source": "/api/(.*)", "destination": "https://interview-share-backend.onrender.com/api/$1" },
+        { "source": "/login", "destination": "https://interview-share-backend.onrender.com/login" },
+        { "source": "/register", "destination": "https://interview-share-backend.onrender.com/register" },
+        { "source": "/logout", "destination": "https://interview-share-backend.onrender.com/logout" },
+        { "source": "/(.*)", "destination": "/index.html" }
     ]
 }
