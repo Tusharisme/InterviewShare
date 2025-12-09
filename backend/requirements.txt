@@ -4,5 +4,4 @@ Flask-Security-Too==5.3.3
 email-validator==2.1.0.post1
 flask-cors==4.0.0
 python-dotenv==1.0.0
-argon2-cffi==23.1.0
 psycopg2-binary

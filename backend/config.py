@@ -8,7 +8,7 @@ class Config:
     
     # Flask-Security
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT', 'super-secret-salt')
-    SECURITY_PASSWORD_HASH = 'argon2'
+    # SECURITY_PASSWORD_HASH = 'argon2' # Commented out to use default (pbkdf2_sha512) for Vercel compatibility
     
     # Flask-Security Config for SPA/API
     SECURITY_REGISTERABLE = True
