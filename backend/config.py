@@ -3,12 +3,18 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess-this-secret-key'
     # Check for both standard naming conventions
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI') or os.environ.get('DATABASE_URL') or 'sqlite:///:memory:'
+    _db_url = os.environ.get('SQLALCHEMY_DATABASE_URI') or os.environ.get('DATABASE_URL')
+    if _db_url and _db_url.startswith("postgres://"):
+        _db_url = _db_url.replace("postgres://", "postgresql+pg8000://")
+    elif _db_url and _db_url.startswith("postgresql://"):
+        _db_url = _db_url.replace("postgresql://", "postgresql+pg8000://")
+        
+    SQLALCHEMY_DATABASE_URI = _db_url or 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Flask-Security
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT', 'super-secret-salt')
-    SECURITY_PASSWORD_HASH = 'bcrypt'
+    # SECURITY_PASSWORD_HASH = 'bcrypt' # Removed to use default (standard lib)
     
     # Flask-Security Config for SPA/API
     SECURITY_REGISTERABLE = True
