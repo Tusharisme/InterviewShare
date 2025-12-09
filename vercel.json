@@ -1,4 +1,14 @@
 {
+    "version": 2,
+    "builds": [
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        }
+    ],
     "rewrites": [
         { "source": "/api/(.*)", "destination": "https://interview-share-backend.onrender.com/api/$1" },
         { "source": "/login", "destination": "https://interview-share-backend.onrender.com/login" },
