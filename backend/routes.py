@@ -29,17 +29,22 @@ def health_check():
 
 @api.route('/experiences', methods=['GET'])
 def get_experiences():
-    query = request.args.get('q')
-    if query:
-        search = f"%{query}%"
-        experiences = Experience.query.filter(
-            (Experience.title.like(search)) | 
-            (Experience.company.like(search))
-        ).order_by(Experience.created_at.desc()).all()
-    else:
-        experiences = Experience.query.order_by(Experience.created_at.desc()).all()
-        
-    return jsonify([exp.to_dict() for exp in experiences]), 200
+    try:
+        query = request.args.get('q')
+        if query:
+            # Simple search implementation
+            experiences = Experience.query.filter(
+                (Experience.company.ilike(f'%{query}%')) | 
+                (Experience.role_title.ilike(f'%{query}%'))
+            ).order_by(Experience.created_at.desc()).all()
+        else:
+            experiences = Experience.query.order_by(Experience.created_at.desc()).all()
+            
+        return jsonify([e.to_dict() for e in experiences])
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e), "trace": traceback.format_exc()}), 500
 
 @api.route('/experiences/me', methods=['GET'])
 @auth_token_required
