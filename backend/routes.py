@@ -8,24 +8,43 @@ api = Blueprint('api', __name__)
 
 @api.route('/health', methods=['GET'])
 def health_check():
-    db_status = "ok"
-    db_info = "unknown"
-    try:
-        # Check DB connection
-        db.session.execute(db.text("SELECT 1"))
-        uri = str(db.engine.url)
-        if "sqlite" in uri:
-            db_info = "sqlite (fallback active - dangerous on vercel)"
-        elif "postgres" in uri:
-            db_info = "postgres (correct)"
-    except Exception as e:
-        db_status = f"error: {str(e)}"
-
-    return jsonify({
+    status_report = {
         "status": "online",
-        "db_status": db_status,
-        "db_type": db_info
-    }), 200
+        "db_connection": "unknown",
+        "tables": [],
+        "errors": []
+    }
+    
+    try:
+        # 1. Basic Connection
+        db.session.execute(db.text("SELECT 1"))
+        status_report['db_connection'] = "success"
+        
+        # 2. Check Tables (Introspection)
+        inspector = db.inspect(db.engine)
+        tables = inspector.get_table_names()
+        status_report['tables'] = tables
+        
+        # 3. Check Data Access
+        if 'experience' in tables:
+            count = db.session.query(Experience).count()
+            status_report['experience_count'] = count
+            
+            # Try fetching one to test serialization
+            if count > 0:
+                exp = db.session.query(Experience).first()
+                try:
+                    status_report['sample_serialization'] = "success"
+                except Exception as e:
+                    status_report['sample_serialization'] = str(e)
+                    
+    except Exception as e:
+        status_report['db_connection'] = "failed"
+        status_report['errors'].append(str(e))
+        import traceback
+        status_report['trace'] = traceback.format_exc()
+
+    return jsonify(status_report), 200
 
 @api.route('/experiences', methods=['GET'])
 def get_experiences():
