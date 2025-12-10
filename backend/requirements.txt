@@ -6,6 +6,7 @@ flask-cors==4.0.0
 python-dotenv==1.0.0
 passlib
 passlib
+bcrypt
 psycopg2-binary
 gunicorn
 setuptools
