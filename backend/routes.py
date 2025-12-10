@@ -138,6 +138,59 @@ def get_experience(id):
     experience = Experience.query.get_or_404(id)
     return jsonify(experience.to_dict()), 200
 
+@api.route('/stats/heatmap', methods=['GET'])
+def get_heatmap_stats():
+    try:
+        # Aggregate experiences by date
+        # func.date() extracts the date part from datetime
+        try:
+            results = db.session.query(
+                func.date(Experience.created_at).label('date'), 
+                func.count(Experience.id).label('count')
+            ).group_by(func.date(Experience.created_at)).all()
+        except:
+             # Fallback for some DBs if func.date fails (sqlite sometimes behaves differently)
+             results = []
+             
+        # Format for frontend (list of objects)
+        heatmap_data = []
+        for r in results:
+            heatmap_data.append({
+                'date': str(r.date),
+                'count': r.count
+            })
+            
+        return jsonify(heatmap_data), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+from flask_security.utils import verify_password, login_user
+@api.route('/login', methods=['POST'])
+def login_custom():
+    data = request.get_json()
+    if not data or 'email' not in data or 'password' not in data:
+        return jsonify({'meta': {'code': 400}, 'response': {'errors': ['Missing credentials']}}), 400
+        
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user:
+        return jsonify({'meta': {'code': 400}, 'response': {'errors': ['Invalid email or password']}}), 400
+        
+    if not verify_password(data['password'], user.password):
+        return jsonify({'meta': {'code': 400}, 'response': {'errors': ['Invalid email or password']}}), 400
+        
+    # Login the user
+    login_user(user)
+    
+    return jsonify({
+        'meta': {'code': 200},
+        'response': {
+            'user': user.to_dict(include_token=True)
+        }
+    })
+
 @api.route('/experiences/<int:id>', methods=['PUT'])
 @auth_token_required
 def update_experience(id):
@@ -160,5 +213,3 @@ def update_experience(id):
     db.session.commit()
 
     return jsonify(experience.to_dict()), 200
-
-

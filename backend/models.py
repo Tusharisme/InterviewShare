@@ -25,6 +25,16 @@ class User(db.Model, UserMixin):
     experiences = db.relationship('Experience', backref='author', lazy=True)
     liked_experiences = db.relationship('Experience', secondary='experience_likes', backref='liked_by', lazy='dynamic')
 
+    def to_dict(self, include_token=False):
+        data = {
+            'id': self.id,
+            'email': self.email,
+            'active': self.active
+        }
+        if include_token:
+            data['authentication_token'] = self.get_auth_token()
+        return data
+
 # Association table for Likes
 experience_likes = db.Table('experience_likes',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
