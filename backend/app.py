@@ -21,7 +21,7 @@ def create_app():
             db.create_all()
             # Create a test user if none exists
             if not user_datastore.find_user(email="test@example.com"):
-                user_datastore.create_user(email="test@example.com", password=hash_password("password"))
+                user_datastore.create_user(email="test@example.com", password="password")
                 db.session.commit()
         except Exception as e:
             print(f"Skipping DB initialization due to error: {e}")
