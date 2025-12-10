@@ -1,6 +1,9 @@
 # InterviewShare 🎓
+*A platform to share and browse interview experiences.*
 
-**InterviewShare** is a full-stack web application designed to help students share and browse interview experiences. Built with Flask and Vue.js, it offers a secure and interactive platform for placement preparation.
+> **Status**: Deployment Active 🟢
+
+**InterviewShare** is a full-stack web application built with Flask and Vue.js, offering a secure and interactive platform for placement preparation.
 
 ## 🌟 Features
 - **User Authentication**: Secure Login and Registration (Flask-Security).
