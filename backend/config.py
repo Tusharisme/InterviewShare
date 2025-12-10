@@ -3,20 +3,12 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess-this-secret-key'
     # Database Configuration
-    # We use pg8000 (Pure Python) to avoid Vercel/Render binary crashes
-    _db_url = os.environ.get('DATABASE_URL')
+    # Render supports psycopg2, so we can use the standard URL directly
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     
-    if _db_url:
-        # 1. Force driver to pg8000
-        if _db_url.startswith("postgres://"):
-            _db_url = _db_url.replace("postgres://", "postgresql+pg8000://")
-        elif _db_url.startswith("postgresql://"):
-             _db_url = _db_url.replace("postgresql://", "postgresql+pg8000://")
-             
-        # 2. Fix SSL for pg8000 (It doesn't support 'sslmode', uses 'ssl=true')
-        _db_url = _db_url.replace("sslmode=require", "ssl=true")
-
-    SQLALCHEMY_DATABASE_URI = _db_url or 'sqlite:///:memory:'
+    # Fallback for local sqlite if needed (though on Render we expect DATABASE_URL)
+    if not SQLALCHEMY_DATABASE_URI:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Flask-Security
